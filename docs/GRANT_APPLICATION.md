@@ -6,7 +6,7 @@
 
 **One-liner:** An open-source accessible transaction UI SDK for Solana dApps, covering review, wallet handoff, status announcements, warnings, and focus recovery.
 
-**Requested amount:** 6,800 USDG
+**Requested amount:** 5,500 USDG
 
 ## Problem
 
@@ -41,34 +41,34 @@ Wallet Adapter provides connection primitives and wallet selection UI. Transacti
 - Target: 4 weeks after approval.
 - Deliverables: packaged React component, typed review model, four transaction patterns, wallet-adapter demo, CI accessibility checks, WCAG 2.2 mapping.
 - KPI: 25 automated tests; four documented patterns; zero serious/critical automated violations in reference states.
-- Budget: 1,900 USDG.
+- Budget: 1,500 USDG.
 
 ### 2. Assistive-technology validation beta
 
 - Target: 9 weeks after approval.
 - Deliverables: VoiceOver, NVDA, keyboard-only, zoom/reflow, reduced-motion, and high-contrast test matrix; moderated validation with five participants who use assistive technology; fixed beta release.
 - KPI: five compensated sessions; all blocking findings triaged; at least 80% of critical task flows completed without facilitator intervention on the final round.
-- Budget: 2,600 USDG.
+- Budget: 2,100 USDG.
 
 ### 3. Adoption release
 
 - Target: 14 weeks after approval.
 - Deliverables: two public dApp integration pilots, transaction adapter examples, independent accessibility review, contributor documentation, 1.0 release report.
 - KPI: two independently verifiable integrations or merged pilot branches; public audit issues and resolutions; tagged 1.0 release.
-- Budget: 2,300 USDG.
+- Budget: 1,900 USDG.
 
 ## Budget
 
 | Use | Amount | Verification |
 | --- | ---: | --- |
-| SDK engineering and wallet-adapter integrations | 3,600 USDG | Public commits, releases, CI |
-| Independent accessibility specialist review | 1,200 USDG | Review report and public issue log |
+| SDK engineering and wallet-adapter integrations | 2,800 USDG | Public commits, releases, CI |
+| Independent accessibility specialist review | 1,000 USDG | Review report and public issue log |
 | Five assistive-technology participant stipends | 800 USDG | Consent-based session record and receipts |
-| Documentation, examples, and conformance mapping | 700 USDG | Published docs and examples |
+| Documentation, examples, and conformance mapping | 500 USDG | Published docs and examples |
 | Hosting, test devices, and assistive-technology setup | 200 USDG | Deployment and receipts |
-| Delivery contingency | 300 USDG | Used only against documented milestone risk |
+| Delivery contingency | 200 USDG | Used only against documented milestone risk |
 
-Total: **6,800 USDG**.
+Total: **5,500 USDG**.
 
 ## Success measures
 

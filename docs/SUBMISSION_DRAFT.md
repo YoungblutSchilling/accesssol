@@ -16,7 +16,7 @@ An open-source accessible transaction UI SDK for Solana dApps, from review and w
 
 **Grant amount**
 
-6,800 USDG
+5,500 USDG
 
 **Your Telegram username**
 
@@ -64,15 +64,15 @@ QA52800
 
 ## Milestones
 
-### Milestone 1 — Transaction review alpha (1,900 USDG, four weeks)
+### Milestone 1 — Transaction review alpha (1,500 USDG, four weeks)
 
 Publish the packaged component, four transaction patterns, wallet-adapter demo, at least 25 automated tests, and WCAG 2.2 mapping. Success means all reference states have zero serious or critical automated violations, with colour contrast verified in a real browser rather than claimed from jsdom.
 
-### Milestone 2 — Assistive-technology beta (2,600 USDG, nine weeks)
+### Milestone 2 — Assistive-technology beta (2,100 USDG, nine weeks)
 
 Complete a VoiceOver, NVDA, keyboard, 200% zoom/reflow, reduced-motion, and high-contrast matrix. Run five compensated sessions with assistive-technology users, triage all blocking findings, and achieve at least 80% unassisted completion of critical flows in the final validation round.
 
-### Milestone 3 — Adoption release (2,300 USDG, fourteen weeks)
+### Milestone 3 — Adoption release (1,900 USDG, fourteen weeks)
 
 Complete two public dApp pilot integrations or merged pilot branches, an independent accessibility review with public issue resolutions, transaction adapter examples, contributor documentation, and a tagged 1.0 release.
 
@@ -83,7 +83,7 @@ By the 1.0 milestone: two independently verifiable Solana integrations; five com
 ## Final Checks
 
 - Confirm `feng` is genuinely eligible as a UK resident and can complete KYC after approval.
-- Verify the 6,800 USDG ask, full wallet address, Telegram, X, and GitHub profile.
+- Verify the 5,500 USDG ask, full wallet address, Telegram, X, and GitHub profile.
 - Verify repository, Pages deployment, Actions checks, and npm package contents.
 - Ensure milestones and KPI remain future commitments, while current tests are labelled as current evidence.
 - Read and confirm the funding acknowledgement only if still true: `To receive grant funding, you may need to send proofs of milestone completion and of outcomes that reflect your application and this grant listing.`
