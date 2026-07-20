@@ -51,6 +51,10 @@ The test suite runs `axe-core` against rendered transaction review states and se
 - Localised announcements and right-to-left layout.
 - Public conformance notes mapped to WCAG 2.2 success criteria.
 
+## Grant evidence
+
+The [UK grant application](docs/GRANT_APPLICATION.md) and [submission field map](docs/SUBMISSION_DRAFT.md) separate current MVP evidence from funded milestones, participant research, and independent-review commitments.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
