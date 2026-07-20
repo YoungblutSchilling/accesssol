@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Accessibility,
   Activity,
-  ArrowRight,
   BookOpen,
   Check,
   Clipboard,
@@ -11,12 +10,12 @@ import {
   ExternalLink,
   Eye,
   FileCheck2,
+  FlaskConical,
   Github,
-  GitPullRequest,
+  Map,
   RotateCcw,
   ShieldAlert,
   Terminal,
-  Users,
   Volume2,
 } from 'lucide-react'
 import { AccessibleTransactionReview, announcementFor } from './sdk'
@@ -25,17 +24,14 @@ import './styles.css'
 
 type SampleKey = 'credential' | 'permission' | 'stipend'
 type CodeSampleKey = 'install' | 'component' | 'lifecycle'
+type ViewKey = 'workbench' | 'quickstart' | 'evidence' | 'roadmap'
 
 const repositoryUrl = 'https://github.com/YoungblutSchilling/accesssol'
 
 const samples: Record<SampleKey, TransactionReviewModel> = {
   credential: {
-    id: 'CRED-2048',
-    title: 'Issue community credential',
-    origin: 'Civic Passport',
-    network: 'Devnet',
-    wallet: '8wN3tDz9wbSyV1YFQ7Y8Rj1j3EFcPyCxjoxSp2Q9V4bp',
-    fee: '0.000005 SOL',
+    id: 'CRED-2048', title: 'Issue community credential', origin: 'Civic Passport', network: 'Devnet',
+    wallet: '8wN3tDz9wbSyV1YFQ7Y8Rj1j3EFcPyCxjoxSp2Q9V4bp', fee: '0.000005 SOL',
     items: [
       { id: 'program', label: 'Program', value: 'CivicPass', detail: 'Verified programme registry' },
       { id: 'record', label: 'Record', value: 'Volunteer - Level 2', tone: 'positive' },
@@ -43,12 +39,8 @@ const samples: Record<SampleKey, TransactionReviewModel> = {
     ],
   },
   permission: {
-    id: 'AUTH-7810',
-    title: 'Update programme permission',
-    origin: 'Access Registry',
-    network: 'Devnet',
-    wallet: '5iozfG3sFzpYx9NBSxni9vxTu1gSoCueL8phaSrQzxYX',
-    fee: '0.000005 SOL',
+    id: 'AUTH-7810', title: 'Update programme permission', origin: 'Access Registry', network: 'Devnet',
+    wallet: '5iozfG3sFzpYx9NBSxni9vxTu1gSoCueL8phaSrQzxYX', fee: '0.000005 SOL',
     items: [
       { id: 'programme', label: 'Programme', value: 'Access Registry', detail: '3xLk...7psQ' },
       { id: 'change', label: 'Permission', value: 'Write profile', tone: 'danger' },
@@ -57,12 +49,8 @@ const samples: Record<SampleKey, TransactionReviewModel> = {
     warnings: ['This action grants a persistent write permission.', 'Only continue if you recognise Access Registry.'],
   },
   stipend: {
-    id: 'SEND-4092',
-    title: 'Send contributor stipend',
-    origin: 'Community Treasury',
-    network: 'Devnet',
-    wallet: 'HWJCpd8AS2nZDQzBprkiMPxd25RE25ePiVv7nhbX6doj',
-    fee: '0.000005 SOL',
+    id: 'SEND-4092', title: 'Send contributor stipend', origin: 'Community Treasury', network: 'Devnet',
+    wallet: 'HWJCpd8AS2nZDQzBprkiMPxd25RE25ePiVv7nhbX6doj', fee: '0.000005 SOL',
     items: [
       { id: 'recipient', label: 'Recipient', value: 'F3yw...p8dT', detail: 'Saved contributor address' },
       { id: 'amount', label: 'Amount', value: '0.25 SOL', tone: 'warning' },
@@ -82,8 +70,7 @@ import '@accesssol/react/styles.css'
   onConfirm={requestWalletSignature}
   onReject={closeReview}
 />`,
-  lifecycle: `// Keep wallet logic in your app. AccessSol renders its state.
-setStatus('awaiting-signature')
+  lifecycle: `setStatus('awaiting-signature')
 const signed = await wallet.signTransaction(transaction)
 
 setStatus('submitted')
@@ -102,7 +89,15 @@ const evidence = [
   { criterion: '4.1.3', behaviour: 'Polite progress and assertive failure', proof: 'Announcement tests', state: 'Verified' },
 ]
 
+const viewItems: { key: ViewKey; label: string; detail: string; icon: React.ReactNode }[] = [
+  { key: 'workbench', label: 'Workbench', detail: 'Live component states', icon: <FlaskConical size={17} /> },
+  { key: 'quickstart', label: 'Quickstart', detail: 'Install and integrate', icon: <Code2 size={17} /> },
+  { key: 'evidence', label: 'Evidence', detail: 'Tests and WCAG map', icon: <FileCheck2 size={17} /> },
+  { key: 'roadmap', label: 'Delivery', detail: 'Milestones and scope', icon: <Map size={17} /> },
+]
+
 export default function App() {
+  const [view, setView] = useState<ViewKey>('workbench')
   const [sampleKey, setSampleKey] = useState<SampleKey>('credential')
   const [status, setStatus] = useState<TransactionStatus>('review')
   const [simulateFailure, setSimulateFailure] = useState(false)
@@ -154,17 +149,8 @@ export default function App() {
       if (simulateFailure) {
         setError('The recent blockhash expired. Request a fresh transaction and try again.')
         setStatus('failed')
-      } else {
-        setStatus('confirmed')
-      }
+      } else setStatus('confirmed')
     }, 2100))
-  }
-
-  function reject() {
-    clearFlow()
-    setStatus('review')
-    setError(undefined)
-    setLog((current) => ['Review cancelled. Nothing was signed or sent.', ...current].slice(0, 5))
   }
 
   function reset() {
@@ -181,166 +167,176 @@ export default function App() {
   }
 
   return (
-    <div className={`site-shell ${highContrast ? 'high-contrast' : ''} ${reduceMotion ? 'reduce-motion' : ''}`}>
+    <div className={`app-shell ${highContrast ? 'high-contrast' : ''} ${reduceMotion ? 'reduce-motion' : ''}`}>
       <a className="skip-link" href="#main">Skip to main content</a>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="AccessSol home">
+      <header className="app-header">
+        <button className="brand" type="button" onClick={() => setView('workbench')} aria-label="Open AccessSol workbench">
           <span className="brand-mark" aria-hidden="true"><Accessibility size={20} /></span>
-          <span>AccessSol</span>
-          <small>ALPHA</small>
-        </a>
-        <nav aria-label="Primary navigation">
-          <a href="#lab">Live lab</a>
-          <a href="#integrate">Integrate</a>
-          <a href="#evidence">Evidence</a>
-          <a href="#roadmap">Roadmap</a>
-        </nav>
-        <a className="header-source" href={repositoryUrl} target="_blank" rel="noreferrer"><Github size={17} /> <span>Source</span></a>
+          <span>AccessSol</span><small>0.1.0</small>
+        </button>
+        <div className="build-status"><span><Check size={12} /></span><strong>12 / 12</strong><small>CI checks passing</small></div>
+        <a className="header-source" href={repositoryUrl} target="_blank" rel="noreferrer"><Github size={17} /><span>View source</span></a>
       </header>
 
-      <main id="main">
-        <section id="top" className="hero section-frame" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <p className="eyebrow"><span /> OPEN-SOURCE SOLANA ACCESSIBILITY INFRASTRUCTURE</p>
-            <h1 id="hero-title">Make the transaction understandable <em>before</em> it becomes irreversible.</h1>
-            <p className="hero-lede">AccessSol gives React teams a tested review and status layer for wallet handoff, network progress, warnings, failures, and focus recovery.</p>
-            <div className="hero-actions">
-              <a className="button primary" href="#lab">Try the live states <ArrowRight size={17} /></a>
-              <a className="button secondary" href={`${repositoryUrl}#readme`} target="_blank" rel="noreferrer">Read the source <Github size={17} /></a>
-            </div>
+      <div className="app-body">
+        <aside className="app-sidebar">
+          <nav aria-label="Product views">
+            {viewItems.map((item) => (
+              <button key={item.key} type="button" aria-label={item.label} title={item.label} aria-current={view === item.key ? 'page' : undefined} onClick={() => setView(item.key)}>
+                <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                <span><strong>{item.label}</strong><small>{item.detail}</small></span>
+              </button>
+            ))}
+          </nav>
+          <div className="sidebar-release">
+            <span>PUBLIC ALPHA</span>
+            <strong>Source install available</strong>
+            <p>MIT licensed. Registry packaging and Wallet Adapter examples are funded milestones.</p>
           </div>
-          <aside className="release-ledger" aria-label="Current release evidence">
-            <div className="ledger-head"><span>RELEASE LEDGER</span><strong>v0.1.0</strong></div>
-            <dl>
-              <div><dt>Shipped today</dt><dd>React component + hooks</dd></div>
-              <div><dt>Automated suite</dt><dd>12 passing tests</dd></div>
-              <div><dt>Distribution</dt><dd>GitHub source alpha</dd></div>
-              <div><dt>License</dt><dd>MIT / public good</dd></div>
-            </dl>
-            <p><Check size={14} /> CI builds both the reusable library and this reference application.</p>
-          </aside>
-        </section>
+        </aside>
 
-        <section id="lab" className="lab-section section-frame" aria-labelledby="lab-title">
-          <div className="section-heading">
-            <div><p className="section-index">01 / LIVE LAB</p><h2 id="lab-title">Inspect every state, not just the happy path.</h2></div>
-            <p>Use the controls to expose the exact screen-reader announcement and focus behaviour generated by the SDK.</p>
-          </div>
-          <div className="simulation-note"><Activity size={15} /><strong>Safe simulator:</strong> this lab models Devnet lifecycle states. It never opens a wallet, signs, or moves funds.</div>
+        <main id="main" className="workspace">
+          {view === 'workbench' && (
+            <WorkbenchView
+              sampleKey={sampleKey} status={status} error={error} transaction={transaction} log={log}
+              highContrast={highContrast} reduceMotion={reduceMotion} simulateFailure={simulateFailure}
+              onSample={selectSample} onTabKey={handleTabKey} onConfirm={confirm}
+              onReject={reset} onReset={reset} onContrast={setHighContrast}
+              onMotion={setReduceMotion} onFailure={setSimulateFailure}
+            />
+          )}
+          {view === 'quickstart' && <QuickstartView codeSample={codeSample} copied={copied} onSample={setCodeSample} onCopy={copyCode} />}
+          {view === 'evidence' && <EvidenceView />}
+          {view === 'roadmap' && <RoadmapView />}
+        </main>
+      </div>
 
-          <div className="sample-tabs" role="tablist" aria-label="Transaction sample">
-            <button id="sample-tab-credential" role="tab" aria-controls="sample-panel" aria-selected={sampleKey === 'credential'} tabIndex={sampleKey === 'credential' ? 0 : -1} onKeyDown={(event) => handleTabKey(event, 'credential')} onClick={() => selectSample('credential')}>Credential</button>
-            <button id="sample-tab-permission" role="tab" aria-controls="sample-panel" aria-selected={sampleKey === 'permission'} tabIndex={sampleKey === 'permission' ? 0 : -1} onKeyDown={(event) => handleTabKey(event, 'permission')} onClick={() => selectSample('permission')}>Permission</button>
-            <button id="sample-tab-stipend" role="tab" aria-controls="sample-panel" aria-selected={sampleKey === 'stipend'} tabIndex={sampleKey === 'stipend' ? 0 : -1} onKeyDown={(event) => handleTabKey(event, 'stipend')} onClick={() => selectSample('stipend')}>Stipend</button>
-          </div>
-
-          <div className="lab-grid">
-            <section id="sample-panel" className="preview-pane" role="tabpanel" aria-labelledby={`sample-tab-${sampleKey}`}>
-              <div className="pane-bar">
-                <div><Eye size={15} /><span>Component preview</span></div>
-                <button className="square-button" type="button" onClick={reset} aria-label="Reset transaction state" title="Reset transaction state"><RotateCcw size={16} /></button>
-              </div>
-              <div className="preview-canvas">
-                <AccessibleTransactionReview transaction={transaction} status={status} error={error} explorerUrl="https://explorer.solana.com/?cluster=devnet" onConfirm={confirm} onReject={reject} />
-              </div>
-            </section>
-
-            <aside className="inspector-pane" aria-label="Accessibility inspector">
-              <div className="pane-bar"><div><Accessibility size={15} /><span>Accessibility inspector</span></div><span className="test-count">LIVE TRACE</span></div>
-              <section className="inspector-section">
-                <h3>Rendering preferences</h3>
-                <PreferenceRow icon={<Contrast size={17} />} label="High contrast" detail="Strengthens borders and status colour" checked={highContrast} onChange={setHighContrast} />
-                <PreferenceRow icon={<Activity size={17} />} label="Reduce motion" detail="Stops progress rotation" checked={reduceMotion} onChange={setReduceMotion} />
-                <PreferenceRow icon={<ShieldAlert size={17} />} label="Simulate failure" detail="Tests assertive error handling" checked={simulateFailure} onChange={setSimulateFailure} />
-              </section>
-              <section className="inspector-section announcement-section">
-                <div className="section-title"><h3>Announcement trace</h3><Volume2 size={16} aria-hidden="true" /></div>
-                <ol className="announcement-log">
-                  {log.map((entry, index) => <li key={`${entry}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><p>{entry}</p></li>)}
-                </ol>
-              </section>
-              <section className="check-grid" aria-label="Implemented safeguards">
-                <CheckItem label="Named controls" /><CheckItem label="Status semantics" /><CheckItem label="Keyboard focus" /><CheckItem label="Motion preference" />
-              </section>
-            </aside>
-          </div>
-        </section>
-
-        <section id="integrate" className="developer-section section-frame" aria-labelledby="integrate-title">
-          <div className="section-heading">
-            <div><p className="section-index">02 / INTEGRATE</p><h2 id="integrate-title">From source to first review state.</h2></div>
-            <p>The alpha is installable directly from GitHub. Your app keeps custody and wallet logic; AccessSol owns the accessible presentation layer.</p>
-          </div>
-          <div className="developer-grid">
-            <div className="code-workbench">
-              <div className="code-tabs" role="tablist" aria-label="Integration code samples">
-                {(['install', 'component', 'lifecycle'] as CodeSampleKey[]).map((key) => (
-                  <button key={key} role="tab" aria-selected={codeSample === key} onClick={() => { setCodeSample(key); setCopied(false) }}>{key === 'install' ? '1. Install' : key === 'component' ? '2. Render' : '3. Connect'}</button>
-                ))}
-              </div>
-              <div className="code-toolbar"><span><Terminal size={14} /> {codeSample === 'install' ? 'terminal' : 'App.tsx'}</span><button type="button" onClick={copyCode} aria-label={`Copy ${codeSample} code`}><Clipboard size={14} /> {copied ? 'Copied' : 'Copy'}</button></div>
-              <pre tabIndex={0}><code>{codeSamples[codeSample]}</code></pre>
-              <p className="code-caption">GitHub installation is available now. Registry packaging and Wallet Adapter reference integrations are grant milestones.</p>
-            </div>
-            <ol className="integration-contract">
-              <li><span>01</span><div><strong>Describe the transaction</strong><p>Pass a typed model with origin, network, fee, effects, and risk warnings.</p></div></li>
-              <li><span>02</span><div><strong>Keep wallet control</strong><p>Use your existing wallet adapter. AccessSol never touches keys or bypasses wallet prompts.</p></div></li>
-              <li><span>03</span><div><strong>Report lifecycle state</strong><p>Update five deterministic states; the SDK handles live announcements and terminal focus.</p></div></li>
-              <li><span>04</span><div><strong>Test the contract</strong><p>Run the exported component in CI and verify manual assistive-technology paths before release.</p></div></li>
-            </ol>
-          </div>
-          <div className="resource-links">
-            <a href={`${repositoryUrl}/blob/main/docs/INTEGRATION.md`} target="_blank" rel="noreferrer"><BookOpen size={18} /><span><strong>Integration guide</strong><small>Typed model and lifecycle contract</small></span><ExternalLink size={15} /></a>
-            <a href={`${repositoryUrl}/tree/main/src/sdk`} target="_blank" rel="noreferrer"><Code2 size={18} /><span><strong>SDK source</strong><small>Review component, hook, and tests</small></span><ExternalLink size={15} /></a>
-            <a href={`${repositoryUrl}/blob/main/LICENSE`} target="_blank" rel="noreferrer"><GitPullRequest size={18} /><span><strong>MIT licence</strong><small>Fork, audit, and contribute</small></span><ExternalLink size={15} /></a>
-          </div>
-        </section>
-
-        <section id="evidence" className="evidence-section section-frame" aria-labelledby="evidence-title">
-          <div className="section-heading">
-            <div><p className="section-index">03 / EVIDENCE</p><h2 id="evidence-title">Evidence, with the boundary visible.</h2></div>
-            <p>Automated results verify implementation mechanics. They do not constitute full WCAG conformance or replace testing with disabled users.</p>
-          </div>
-          <div className="evidence-grid">
-            <div className="evidence-table-wrap">
-              <table>
-                <caption className="visually-hidden">Current accessibility implementation evidence</caption>
-                <thead><tr><th>WCAG</th><th>Behaviour</th><th>Public proof</th><th>Status</th></tr></thead>
-                <tbody>{evidence.map((item) => <tr key={item.criterion}><td>{item.criterion}</td><td>{item.behaviour}</td><td>{item.proof}</td><td><span className={item.state === 'Verified' ? 'status-verified' : 'status-implemented'}>{item.state}</span></td></tr>)}</tbody>
-              </table>
-            </div>
-            <aside className="evidence-aside">
-              <FileCheck2 size={25} />
-              <p className="eyebrow">CURRENT CLAIM</p>
-              <h3>Tested implementation, not a conformance badge.</h3>
-              <p>CI currently checks semantic rendering, action names, keyboard tabs, warnings, focus movement, lifecycle announcements, and build output.</p>
-              <a href={`${repositoryUrl}/blob/main/docs/CONFORMANCE.md`} target="_blank" rel="noreferrer">Read conformance notes <ArrowRight size={15} /></a>
-            </aside>
-          </div>
-        </section>
-
-        <section id="roadmap" className="roadmap-section section-frame" aria-labelledby="roadmap-title">
-          <div className="section-heading">
-            <div><p className="section-index">04 / DELIVERY</p><h2 id="roadmap-title">A bounded path from alpha to adoption.</h2></div>
-            <p>The public roadmap ties every funded milestone to inspectable output, measurable validation, and release evidence.</p>
-          </div>
-          <div className="roadmap-track">
-            <article className="roadmap-current"><p>NOW / PUBLIC ALPHA</p><h3>Reusable transaction review core</h3><ul><li>React component and typed model</li><li>Lifecycle announcement hook</li><li>Interactive failure and preference lab</li><li>CI, source, tests, and MIT licence</li></ul></article>
-            <article><p>M1 / WEEK 4</p><h3>Wallet-ready alpha</h3><ul><li>Wallet Adapter reference app</li><li>Four transaction adapters</li><li>25 automated tests</li><li>WCAG 2.2 implementation map</li></ul></article>
-            <article><p>M2 / WEEK 9</p><h3>Validated beta</h3><ul><li>Five compensated user sessions</li><li>Assistive-technology test matrix</li><li>Blocking findings resolved</li><li>Public beta release report</li></ul></article>
-            <article><p>M3 / WEEK 14</p><h3>Adoption release</h3><ul><li>Two public integration pilots</li><li>Independent accessibility review</li><li>Public issue and resolution log</li><li>Tagged 1.0 release</li></ul></article>
-          </div>
-          <div className="roadmap-footer"><Users size={19} /><p><strong>Success is adoption, not output volume.</strong> The final milestone only counts integrations that are publicly verifiable or confirmed by maintainers.</p><a href={`${repositoryUrl}/blob/main/docs/GRANT_APPLICATION.md`} target="_blank" rel="noreferrer">Full delivery plan <ExternalLink size={14} /></a></div>
-        </section>
-      </main>
-
-      <footer className="site-footer section-frame">
-        <div><span className="brand-mark" aria-hidden="true"><Accessibility size={19} /></span><span><strong>AccessSol</strong><small>Accessible transaction infrastructure for Solana.</small></span></div>
-        <p>React 18+ / MIT / Public alpha</p>
-        <div><a href={repositoryUrl} target="_blank" rel="noreferrer">GitHub</a><a href={`${repositoryUrl}/issues`} target="_blank" rel="noreferrer">Issues</a><a href={`${repositoryUrl}/blob/main/docs/TEST_MATRIX.md`} target="_blank" rel="noreferrer">Test matrix</a></div>
+      <footer className="status-bar">
+        <span><span className="status-dot" /> Reference app online</span>
+        <span>React 18+</span><span>MIT</span><span>Devnet simulator / no funds moved</span>
       </footer>
     </div>
   )
+}
+
+interface WorkbenchProps {
+  sampleKey: SampleKey
+  status: TransactionStatus
+  error?: string
+  transaction: TransactionReviewModel
+  log: string[]
+  highContrast: boolean
+  reduceMotion: boolean
+  simulateFailure: boolean
+  onSample: (key: SampleKey) => void
+  onTabKey: (event: React.KeyboardEvent<HTMLButtonElement>, current: SampleKey) => void
+  onConfirm: () => void
+  onReject: () => void
+  onReset: () => void
+  onContrast: (value: boolean) => void
+  onMotion: (value: boolean) => void
+  onFailure: (value: boolean) => void
+}
+
+function WorkbenchView(props: WorkbenchProps) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="TRANSACTION LAB / DEVNET" title="Transaction review workbench" detail="Exercise the component lifecycle and inspect its accessibility output in real time." />
+      <div className="workbench-toolbar">
+        <div className="sample-tabs" role="tablist" aria-label="Transaction sample">
+          {(['credential', 'permission', 'stipend'] as SampleKey[]).map((key) => (
+            <button id={`sample-tab-${key}`} key={key} role="tab" aria-controls="sample-panel" aria-selected={props.sampleKey === key} tabIndex={props.sampleKey === key ? 0 : -1} onKeyDown={(event) => props.onTabKey(event, key)} onClick={() => props.onSample(key)}>{key[0].toUpperCase() + key.slice(1)}</button>
+          ))}
+        </div>
+        <div className="simulation-note"><Activity size={14} /><span><strong>Simulation only.</strong> It never opens a wallet, signs, or moves funds.</span></div>
+        <button className="icon-button" type="button" onClick={props.onReset} aria-label="Reset transaction state" title="Reset transaction state"><RotateCcw size={16} /></button>
+      </div>
+
+      <div className="workbench-grid">
+        <section id="sample-panel" className="preview-pane" role="tabpanel" aria-labelledby={`sample-tab-${props.sampleKey}`}>
+          <div className="pane-bar"><div><Eye size={15} /><span>Rendered component</span></div><span>480 PX REFERENCE</span></div>
+          <div className="preview-canvas">
+            <AccessibleTransactionReview transaction={props.transaction} status={props.status} error={props.error} explorerUrl="https://explorer.solana.com/?cluster=devnet" onConfirm={props.onConfirm} onReject={props.onReject} />
+          </div>
+        </section>
+        <aside className="inspector-pane" aria-label="Accessibility inspector">
+          <div className="pane-bar"><div><Accessibility size={15} /><span>Accessibility inspector</span></div><span>LIVE</span></div>
+          <section className="inspector-section control-section">
+            <h2>Environment</h2>
+            <PreferenceRow icon={<Contrast size={17} />} label="High contrast" detail="Strengthens state boundaries" checked={props.highContrast} onChange={props.onContrast} />
+            <PreferenceRow icon={<Activity size={17} />} label="Reduce motion" detail="Stops progress rotation" checked={props.reduceMotion} onChange={props.onMotion} />
+            <PreferenceRow icon={<ShieldAlert size={17} />} label="Force failure" detail="Exercises assertive recovery" checked={props.simulateFailure} onChange={props.onFailure} />
+          </section>
+          <section className="inspector-section trace-section">
+            <div className="section-title"><h2>Announcement trace</h2><Volume2 size={16} aria-hidden="true" /></div>
+            <ol className="announcement-log">{props.log.map((entry, index) => <li key={`${entry}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><p>{entry}</p></li>)}</ol>
+          </section>
+          <section className="check-grid" aria-label="Implemented safeguards"><CheckItem label="Named controls" /><CheckItem label="Status semantics" /><CheckItem label="Focus recovery" /><CheckItem label="Motion preference" /></section>
+        </aside>
+      </div>
+    </div>
+  )
+}
+
+function QuickstartView({ codeSample, copied, onSample, onCopy }: { codeSample: CodeSampleKey; copied: boolean; onSample: (key: CodeSampleKey) => void; onCopy: () => void }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="DEVELOPER GUIDE / SOURCE ALPHA" title="Integrate without replacing wallet logic" detail="Your application keeps wallet selection, signing, submission, and confirmation. AccessSol renders the accessible review contract." />
+      <div className="quickstart-layout">
+        <div className="step-list">
+          <button className={codeSample === 'install' ? 'active' : ''} onClick={() => onSample('install')}><span>01</span><div><strong>Install source alpha</strong><small>GitHub distribution</small></div></button>
+          <button className={codeSample === 'component' ? 'active' : ''} onClick={() => onSample('component')}><span>02</span><div><strong>Render the review</strong><small>Typed transaction model</small></div></button>
+          <button className={codeSample === 'lifecycle' ? 'active' : ''} onClick={() => onSample('lifecycle')}><span>03</span><div><strong>Connect lifecycle</strong><small>Wallet remains app-owned</small></div></button>
+        </div>
+        <div className="code-workbench">
+          <div className="code-toolbar"><span><Terminal size={14} /> {codeSample === 'install' ? 'terminal' : 'App.tsx'}</span><button type="button" onClick={onCopy} aria-label={`Copy ${codeSample} code`}><Clipboard size={14} /> {copied ? 'Copied' : 'Copy'}</button></div>
+          <pre tabIndex={0}><code>{codeSamples[codeSample]}</code></pre>
+        </div>
+      </div>
+      <div className="implementation-notes">
+        <section><h2>Host application owns</h2><ul><li>Wallet selection and connection</li><li>Transaction construction and signing</li><li>Network submission and confirmation</li></ul></section>
+        <section><h2>AccessSol owns</h2><ul><li>Review structure and warnings</li><li>Lifecycle announcements</li><li>Terminal focus and recovery state</li></ul></section>
+        <section className="doc-links"><h2>Public documentation</h2><a href={`${repositoryUrl}/blob/main/docs/INTEGRATION.md`} target="_blank" rel="noreferrer"><BookOpen size={15} /> Integration guide <ExternalLink size={13} /></a><a href={`${repositoryUrl}/tree/main/src/sdk`} target="_blank" rel="noreferrer"><Code2 size={15} /> SDK source <ExternalLink size={13} /></a></section>
+      </div>
+    </div>
+  )
+}
+
+function EvidenceView() {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="VERIFICATION / CURRENT ALPHA" title="Implementation evidence" detail="Automated checks verify mechanics. They do not constitute WCAG conformance or replace validation with disabled users." />
+      <div className="evidence-summary"><Metric value="12" label="Passing tests" /><Metric value="3" label="Test files" /><Metric value="0" label="Detected axe violations*" /><Metric value="2" label="Build targets" /></div>
+      <div className="evidence-layout">
+        <div className="evidence-table-wrap"><table><caption className="visually-hidden">Current accessibility implementation evidence</caption><thead><tr><th>WCAG</th><th>Behaviour</th><th>Public proof</th><th>Status</th></tr></thead><tbody>{evidence.map((item) => <tr key={item.criterion}><td>{item.criterion}</td><td>{item.behaviour}</td><td>{item.proof}</td><td><span className={item.state === 'Verified' ? 'status-verified' : 'status-implemented'}>{item.state}</span></td></tr>)}</tbody></table></div>
+        <aside className="claim-boundary"><ShieldAlert size={20} /><span>CLAIM BOUNDARY</span><h2>Tested alpha, not a conformance badge.</h2><p>* axe-core runs in jsdom with layout-dependent colour contrast excluded. Manual browser QA and assistive-technology validation remain separate work.</p><a href={`${repositoryUrl}/blob/main/docs/CONFORMANCE.md`} target="_blank" rel="noreferrer">Conformance notes <ExternalLink size={13} /></a><a href={`${repositoryUrl}/blob/main/docs/TEST_MATRIX.md`} target="_blank" rel="noreferrer">Full test matrix <ExternalLink size={13} /></a></aside>
+      </div>
+    </div>
+  )
+}
+
+function RoadmapView() {
+  const milestones = [
+    { id: 'NOW', timing: 'Public alpha', title: 'Reusable review core', status: 'Shipped', items: 'React component, typed model, announcement hook, CI and interactive lab' },
+    { id: 'M1', timing: 'Week 4', title: 'Wallet-ready alpha', status: 'Funded scope', items: 'Wallet Adapter reference app, four adapters, 25 tests and WCAG map' },
+    { id: 'M2', timing: 'Week 9', title: 'Validated beta', status: 'Funded scope', items: 'Five compensated sessions, assistive-technology matrix and beta report' },
+    { id: 'M3', timing: 'Week 14', title: 'Adoption release', status: 'Funded scope', items: 'Two public pilots, independent review, issue log and tagged 1.0 release' },
+  ]
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="DELIVERY / 5,500 USDG" title="Milestones tied to public proof" detail="Each stage ends with inspectable code, validation records, or independently verifiable adoption evidence." />
+      <div className="milestone-list">{milestones.map((milestone) => <article key={milestone.id}><span className="milestone-id">{milestone.id}</span><span className="milestone-time">{milestone.timing}</span><div><h2>{milestone.title}</h2><p>{milestone.items}</p></div><span className={milestone.status === 'Shipped' ? 'milestone-shipped' : 'milestone-planned'}>{milestone.status}</span></article>)}</div>
+      <div className="delivery-bottom"><section><span>SUCCESS CONDITION</span><h2>Adoption, not output volume</h2><p>The final milestone only counts integrations that are public, merged, or confirmed by maintainers.</p></section><section><span>BUDGET SPLIT</span><dl><div><dt>Engineering</dt><dd>2,800</dd></div><div><dt>Independent review</dt><dd>1,000</dd></div><div><dt>Participant stipends</dt><dd>800</dd></div><div><dt>Docs, hosting, contingency</dt><dd>900</dd></div></dl></section><a href={`${repositoryUrl}/blob/main/docs/GRANT_APPLICATION.md`} target="_blank" rel="noreferrer">Open full delivery plan <ExternalLink size={14} /></a></div>
+    </div>
+  )
+}
+
+function ViewHeader({ eyebrow, title, detail }: { eyebrow: string; title: string; detail: string }) {
+  return <header className="view-header"><div><p>{eyebrow}</p><h1>{title}</h1></div><p>{detail}</p></header>
+}
+
+function Metric({ value, label }: { value: string; label: string }) {
+  return <div><strong>{value}</strong><span>{label}</span></div>
 }
 
 function PreferenceRow({ icon, label, detail, checked, onChange }: { icon: React.ReactNode; label: string; detail: string; checked: boolean; onChange: (value: boolean) => void }) {
