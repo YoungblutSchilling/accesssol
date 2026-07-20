@@ -86,5 +86,6 @@ By the 1.0 milestone: two independently verifiable Solana integrations; five com
 - Verify the 6,800 USDG ask, full wallet address, Telegram, X, and GitHub profile.
 - Verify repository, Pages deployment, Actions checks, and npm package contents.
 - Ensure milestones and KPI remain future commitments, while current tests are labelled as current evidence.
-- Read both acknowledgement statements and tick them only if still true.
+- Read and confirm the funding acknowledgement only if still true: `To receive grant funding, you may need to send proofs of milestone completion and of outcomes that reflect your application and this grant listing.`
+- Read and confirm the feedback acknowledgement only if still true: `I understand that sponsors will not be able to send individual feedback to applicants. I have factored this in before applying to avoid disappointment.`
 - Stop before final submission and request account-holder confirmation.
