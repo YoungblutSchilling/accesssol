@@ -63,4 +63,19 @@ describe('AccessibleTransactionReview', () => {
     )
     expect(screen.getByRole('alert')).toHaveTextContent('persistent account permission')
   })
+
+  it('locks actions while a signed transaction is being submitted', () => {
+    render(<AccessibleTransactionReview transaction={transaction} status="submitted" onConfirm={() => undefined} onReject={() => undefined} />)
+    expect(screen.getByRole('button', { name: 'Processing' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Reject' })).toBeDisabled()
+  })
+
+  it('exposes an explorer link only after confirmation', () => {
+    const { rerender } = render(
+      <AccessibleTransactionReview transaction={transaction} status="review" explorerUrl="https://explorer.solana.com" onConfirm={() => undefined} onReject={() => undefined} />,
+    )
+    expect(screen.queryByRole('link', { name: /explorer/i })).not.toBeInTheDocument()
+    rerender(<AccessibleTransactionReview transaction={transaction} status="confirmed" explorerUrl="https://explorer.solana.com" onConfirm={() => undefined} onReject={() => undefined} />)
+    expect(screen.getByRole('link', { name: /explorer/i })).toHaveAttribute('href', 'https://explorer.solana.com')
+  })
 })

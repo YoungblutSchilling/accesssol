@@ -25,6 +25,7 @@
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "dev": "vite",
+    "prepare": "npm run build:lib",
     "prepack": "npm run build:lib",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -43,6 +43,10 @@ The component does not sign transactions, hold keys, or replace wallet security 
 
 The test suite runs `axe-core` against rendered transaction review states and separately checks action names, focus movement, warning alerts, and deterministic announcements. Automated checks are a baseline, not a substitute for testing with disabled users and assistive technologies; funded milestones explicitly include moderated validation and an independent accessibility review.
 
+- [Integration guide](docs/INTEGRATION.md)
+- [Accessibility implementation notes](docs/CONFORMANCE.md)
+- [Automated and manual test matrix](docs/TEST_MATRIX.md)
+
 ## Roadmap
 
 - Wallet Adapter reference integration and transaction-to-review adapters.

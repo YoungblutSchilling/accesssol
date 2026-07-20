@@ -24,4 +24,9 @@ describe('AccessSol demo workbench', () => {
     expect(permission).toHaveFocus()
     expect(screen.getByRole('heading', { name: 'Update programme permission' })).toBeInTheDocument()
   })
+
+  it('states that the public demo never signs or moves funds', () => {
+    render(<App />)
+    expect(screen.getByText(/never opens a wallet, signs, or moves funds/i)).toBeInTheDocument()
+  })
 })
